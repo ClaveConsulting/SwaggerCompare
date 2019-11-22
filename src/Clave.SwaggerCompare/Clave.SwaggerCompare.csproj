@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <AssemblyName>Clave.SwaggerCompare</AssemblyName>
+    <RootNamespace>Clave.SwaggerCompare</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Title>Clave.SwaggerCompare</Title>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>swagger-compare</ToolCommandName>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageIconUrl>https://raw.githubusercontent.com/ClaveConsulting/logo/master/png/logo_noText.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/ClaveConsulting/SwaggerCompare</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/ClaveConsulting/SwaggerCompare</PackageProjectUrl>
+    <Authors>Clave Consulting</Authors>
+    <Description>Global tool for comparing API responses from two different APIs based on GET requests in Swagger definition.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.*" />
+  </ItemGroup>
+
+</Project>
