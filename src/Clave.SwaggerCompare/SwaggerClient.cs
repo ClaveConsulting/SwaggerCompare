@@ -42,15 +42,21 @@ namespace Clave.SwaggerCompare
         {
             return swaggerDocObject.paths.Where(x => x.Value.get != null).Select(x => new SwaggerUrl
             {
-                Url = MapUrl(x, swaggerDocObject.basePath, testRun)
-            }).ToArray();
+                Url = MapUrl(x, swaggerDocObject.basePath, testRun),
+                Method = HttpMethod.Get
+            }).Concat(swaggerDocObject.paths.Where(x => x.Value.post != null).Select(x => new SwaggerUrl
+            {
+                Url = MapUrl(x, swaggerDocObject.basePath, testRun),
+                Method = HttpMethod.Post
+            })).ToArray();
         }
 
         private static string MapUrl(KeyValuePair<string, SwaggerEndpoint> keyValuePair, string basePath, TestRun testRun)
         {
             var initial = string.Concat(basePath ?? string.Empty, keyValuePair.Key);
-            var queryParameters = keyValuePair.Value.get.parameters?.Where(x => testRun.TreatParametersAsRequired.Contains(x.name)
-                                        || (x.required && x._in == "query")).ToArray() ?? Array.Empty<Parameter>();
+            var queryParameters = (keyValuePair.Value.get?.parameters ?? keyValuePair.Value.post?.parameters)?.Where(
+                                      x => testRun.TreatParametersAsRequired.Contains(x.name)
+                                           || (x.required && x._in == "query")).ToArray() ?? Array.Empty<Parameter>();
             return string.Concat(
                 initial,
                 queryParameters.Any() ? "?" : string.Empty,
@@ -61,5 +67,14 @@ namespace Clave.SwaggerCompare
     public class SwaggerUrl
     {
         public string Url { get; set; }
+        public HttpMethod Method { get; set; }
+    }
+
+    public class SwaggerUrlWithData
+    {
+        public string Url { get; set; }
+        public HttpMethod Method { get; set; }
+        public string Data { get; set; }
+        public string FileName { get; set; }
     }
 }
