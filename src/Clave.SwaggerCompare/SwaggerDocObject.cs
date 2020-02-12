@@ -11,10 +11,16 @@ namespace Clave.SwaggerCompare
 
     public class SwaggerEndpoint
     {
+        public Post post { get; set; }
         public Get get { get; set; }
     }
 
     public class Get
+    {
+        public Parameter[] parameters { get; set; }
+    }
+
+    public class Post
     {
         public Parameter[] parameters { get; set; }
     }
