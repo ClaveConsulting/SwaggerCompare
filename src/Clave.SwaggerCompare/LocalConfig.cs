@@ -13,14 +13,14 @@ namespace Clave.SwaggerCompare
     public class ClientConfig
     {
         public string Url { get; set; }
-        public Dictionary<string, string> Headers { get; set; }
+        public Dictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
     }
 
     public class TestRun
     {
         public IReadOnlyCollection<string> ExcludeEndpoints { get; set; } = Array.Empty<string>();
         public IReadOnlyCollection<string> TreatParametersAsRequired { get; set; } = Array.Empty<string>();
-        public Dictionary<string, string> ReplaceValues { get; set; }
+        public Dictionary<string, string> UrlParameterTestValues { get; set; }
         public IReadOnlyCollection<IncludeEndpoint> IncludeEndpoints { get; set; } = Array.Empty<IncludeEndpoint>();
     }
 
@@ -29,5 +29,6 @@ namespace Clave.SwaggerCompare
         public string Endpoint { get; set; }
         public string Method { get; set; }
         public string DataFolder { get; set; }
+        public IReadOnlyCollection<string> DisregardJsonResponseProperties { get; set; } = Array.Empty<string>();
     }
 }

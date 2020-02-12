@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace Clave.SwaggerCompare
 {
-    public class ConfigService
+    internal class ConfigService
     {
-        private const string DefaultConfigFileName = "config.json";
+        const string DefaultConfigFileName = "config.json";
+        static readonly string[] AllowedMethods = {"GET", "POST"};
 
         public static async Task<LocalConfig> Read(string fileName)
         {
@@ -25,9 +27,9 @@ namespace Clave.SwaggerCompare
             log($"Created default configuration file '{DefaultConfigFileName}' at path '{pathToDefaultConfig}'");
         }
 
-        private static string GetPathTo(string fileName) => Path.Combine(Directory.GetCurrentDirectory(), fileName);
+        static string GetPathTo(string fileName) => Path.Combine(Directory.GetCurrentDirectory(), fileName);
 
-        private static string DefaultConfig() =>
+        static string DefaultConfig() =>
             JsonConvert.SerializeObject(new LocalConfig
             {
                 Client1 = new ClientConfig
@@ -44,7 +46,7 @@ namespace Clave.SwaggerCompare
                 {
                     new TestRun
                     {
-                        ReplaceValues = new Dictionary<string, string>
+                        UrlParameterTestValues = new Dictionary<string, string>
                         {
                             { "param1", "value1" }
                         }
@@ -64,6 +66,20 @@ namespace Clave.SwaggerCompare
                 !Uri.IsWellFormedUriString(config.Client2.Url, UriKind.Absolute))
             {
                 logError("Urls must be valid.");
+                return false;
+            }
+
+            if (config.TestRuns.Any(x => x.IncludeEndpoints.Any(y => !AllowedMethods.Contains(y.Method))))
+            {
+                logError("Only GET and POST operations are supported.");
+                return false;
+            }
+
+            var nonExistingFolder = config.TestRuns.SelectMany(x =>
+                x.IncludeEndpoints.Where(y => !string.IsNullOrEmpty(y.DataFolder) && !Directory.Exists(y.DataFolder)).Select(y => y.DataFolder)).FirstOrDefault();
+            if (nonExistingFolder != null)
+            {
+                logError($"Specified folder does not exist or access is denied: {nonExistingFolder}");
                 return false;
             }
 
