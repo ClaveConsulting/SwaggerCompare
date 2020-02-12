@@ -1,4 +1,7 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Linq;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using static Clave.SwaggerCompare.Logger;
@@ -10,7 +13,7 @@ namespace Clave.SwaggerCompare
         static SwaggerDocObject _swaggerResponse;
 
         static readonly string[] PossibleSwaggerUrls =
-            {"api/swagger/docs/v1", "swagger/docs/v1", "swagger/v1/swagger.json", "api/swagger/v1/swagger.json"};
+            {"swagger/v1/swagger.json", "api/swagger/v1/swagger.json", "api/swagger/docs/v1", "swagger/docs/v1"};
 
         public static async Task<SwaggerDocObject> ReadSwagger(HttpClient client, TestRun testRun)
         {
@@ -23,12 +26,19 @@ namespace Clave.SwaggerCompare
 
             foreach (var possibleSwaggerUrl in PossibleSwaggerUrls)
             {
-                var swaggerResponse = await client.GetAsync(possibleSwaggerUrl);
-                if (swaggerResponse.IsSuccessStatusCode)
+                try
                 {
-                    var swaggerDocObject = JsonConvert.DeserializeObject<SwaggerDocObject>(await swaggerResponse.Content.ReadAsStringAsync());
-                    _swaggerResponse = swaggerDocObject;
-                    return swaggerDocObject;
+                    var swaggerResponse = await client.GetAsync(possibleSwaggerUrl, new CancellationTokenSource(TimeSpan.FromSeconds(5)).Token);
+                    if (swaggerResponse.IsSuccessStatusCode)
+                    {
+                        var swaggerDocObject = JsonConvert.DeserializeObject<SwaggerDocObject>(await swaggerResponse.Content.ReadAsStringAsync());
+                        _swaggerResponse = swaggerDocObject;
+                        return swaggerDocObject;
+                    }
+                }
+                catch (Exception)
+                {
+                    LogWarning($"Timed out fetching Swagger {possibleSwaggerUrl}");
                 }
             }
 
