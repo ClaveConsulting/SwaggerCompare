@@ -12,19 +12,20 @@ namespace Clave.SwaggerCompare
     {
         static SwaggerDocObject _swaggerResponse;
 
-        static readonly string[] PossibleSwaggerUrls =
+        public static readonly string[] PossibleSwaggerUrls =
             {"swagger/v1/swagger.json", "api/swagger/v1/swagger.json", "api/swagger/docs/v1", "swagger/docs/v1"};
 
-        public static async Task<SwaggerDocObject> ReadSwagger(HttpClient client, TestRun testRun)
+        public static async Task<SwaggerDocObject> ReadSwagger(HttpClient client, TestRun testRun, string[] possibleSwaggerUrls)
         {
-            return await Get(client);
+            return await Get(client, possibleSwaggerUrls);
         }
 
-        static async Task<SwaggerDocObject> Get(HttpClient client)
+        static async Task<SwaggerDocObject> Get(HttpClient client, string[] possibleSwaggerUrls)
         {
             if (_swaggerResponse != null) return _swaggerResponse;
+            var swaggerUrls = possibleSwaggerUrls?.Length > 0 ? possibleSwaggerUrls : PossibleSwaggerUrls;
 
-            foreach (var possibleSwaggerUrl in PossibleSwaggerUrls)
+            foreach (var possibleSwaggerUrl in swaggerUrls)
             {
                 try
                 {
@@ -42,7 +43,7 @@ namespace Clave.SwaggerCompare
                 }
             }
 
-            LogError($"Could not find any valid swagger JSON document at {client.BaseAddress} | {string.Join(", ", PossibleSwaggerUrls)}");
+            LogError($"Could not find any valid swagger JSON document at {client.BaseAddress} | {string.Join(", ", swaggerUrls)}");
             return null;
         }
     }

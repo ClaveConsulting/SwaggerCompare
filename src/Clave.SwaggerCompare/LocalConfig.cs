@@ -5,6 +5,7 @@ namespace Clave.SwaggerCompare
 {
     public class LocalConfig
     {
+        public string[] PossibleSwaggerUrls;
         public ClientConfig Client1 { get; set; }
         public ClientConfig Client2 { get; set; }
         public IReadOnlyCollection<TestRun> TestRuns { get; set; }

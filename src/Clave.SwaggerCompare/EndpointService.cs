@@ -12,9 +12,9 @@ namespace Clave.SwaggerCompare
 {
     internal static class EndpointService
     {
-        public static async Task<List<SwaggerUrlWithData>> GetAllEndpoints(HttpClient client, TestRun testRun)
+        public static async Task<List<SwaggerUrlWithData>> GetAllEndpoints(HttpClient client, TestRun testRun, string[] possibleSwaggerUrls)
         {
-            var swaggerDocObject = await SwaggerClient.ReadSwagger(client, testRun);
+            var swaggerDocObject = await SwaggerClient.ReadSwagger(client, testRun, possibleSwaggerUrls);
             if (swaggerDocObject == null)
             {
                 return null;
