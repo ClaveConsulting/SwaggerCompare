@@ -28,6 +28,8 @@ namespace Clave.SwaggerCompare
             LogInfo($"Client1: {config.Client1.Url}");
             LogInfo($"Client2: {config.Client2.Url}");
             LogInfo($"Response differences will be logged to {FileService.TestResultFolder()}");
+            
+            var possibleSwaggerUrls = config.PossibleSwaggerUrls;
 
             var client1 = new HttpClient
             {
@@ -48,7 +50,7 @@ namespace Clave.SwaggerCompare
             var testRunNumber = 1;
             foreach (var testRun in config.TestRuns)
             {
-                var swaggerUrls = await EndpointService.GetAllEndpoints(client1, testRun);
+                var swaggerUrls = await EndpointService.GetAllEndpoints(client1, testRun, possibleSwaggerUrls);
 
                 LogInfo($"{Environment.NewLine}Starting test run #{testRunNumber++} with {swaggerUrls.Count} matching API {"call".Pluralize(swaggerUrls.Count)} planned.");
                 foreach (var path in swaggerUrls)
